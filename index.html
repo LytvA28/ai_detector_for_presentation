@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Presentation Detector</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0 }
+            to { opacity: 1 }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            padding: 40px;
+            border-radius: 20px;
+            width: 420px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            animation: slideUp 0.8s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(40px); opacity: 0 }
+            to { transform: translateY(0); opacity: 1 }
+        }
+
+        h2 {
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        p {
+            opacity: 0.9;
+        }
+
+        input[type="file"] {
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 10px;
+            border: none;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            cursor: pointer;
+        }
+
+        button {
+            background: #ffca28;
+            color: #333;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        button:hover {
+            background: #ffd95b;
+            transform: scale(1.05);
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .loading {
+            margin-top: 20px;
+            font-size: 18px;
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4 }
+            50% { opacity: 1 }
+            100% { opacity: 0.4 }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>AI Presentation Detector</h2>
+    <p>Завантаж презентацію (.pptx), щоб перевірити її на AI</p>
+
+    <input type="file" id="fileInput" accept=".pptx">
+    <button onclick="upload()">Перевірити</button>
+
+    <div id="loading" class="loading" style="display:none;">Обробка...</div>
+    <div id="result"></div>
+</div>
+
+<script>
+async function upload() {
+    const file = document.getElementById("fileInput").files[0];
+    if (!file) {
+        alert("Будь ласка, вибери файл");
+        return;
+    }
+
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("result").innerHTML = "";
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("/predict", {
+        method: "POST",
+        body: formData
+    });
+
+    const data = await res.json();
+
+    document.getElementById("loading").style.display = "none";
+
+    document.getElementById("result").innerHTML =
+        `Ймовірність AI: <b>${data.ai_percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
+}
+</script>
+
+</body>
+</html>
