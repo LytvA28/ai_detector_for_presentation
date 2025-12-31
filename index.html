@@ -5,37 +5,49 @@
   <title>AI Presentation Detector</title>
 
   <style>
+    :root {
+      --bg: linear-gradient(135deg, #6a11cb, #2575fc);
+      --card-bg: rgba(255, 255, 255, 0.15);
+      --text: white;
+      --file-bg: rgba(255,255,255,0.1);
+      --file-border: rgba(255,255,255,0.4);
+    }
+
+    .light {
+      --bg: linear-gradient(135deg, #ffffff, #d7d7d7);
+      --card-bg: rgba(0, 0, 0, 0.1);
+      --text: #222;
+      --file-bg: rgba(0,0,0,0.1);
+      --file-border: rgba(0,0,0,0.3);
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      background: var(--bg);
       height: 100vh;
       margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      animation: fadeIn 1.2s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0 }
-      to { opacity: 1 }
+      color: var(--text);
+      transition: 0.4s;
     }
 
     .container {
-      background: rgba(255, 255, 255, 0.15);
+      background: var(--card-bg);
       backdrop-filter: blur(14px);
       padding: 40px;
       border-radius: 22px;
-      width: 500px;
+      width: 520px;
       text-align: center;
-      color: white;
       box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-      animation: slideUp 0.8s ease-out;
+      transition: 0.4s;
     }
 
-    @keyframes slideUp {
-      from { transform: translateY(40px); opacity: 0 }
-      to { transform: translateY(0); opacity: 1 }
+    .logo {
+      width: 70px;
+      margin-bottom: 10px;
+      opacity: 0.9;
     }
 
     h2 {
@@ -53,13 +65,29 @@
 
     input[type="file"] {
       margin: 20px 0 10px 0;
-      padding: 12px;
+      padding: 12px 20px;
       border-radius: 12px;
-      border: none;
-      background: rgba(255,255,255,0.25);
-      color: white;
+      border: 2px solid var(--file-border);
+      background: var(--file-bg);
+      color: var(--text);
       cursor: pointer;
       width: 80%;
+      transition: 0.3s;
+    }
+
+    input[type="file"]::file-selector-button {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-weight: bold;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+
+    input[type="file"]::file-selector-button:hover {
+      background: rgba(255,255,255,0.2);
     }
 
     button {
@@ -80,8 +108,20 @@
       transform: scale(1.05);
     }
 
+    .theme-toggle {
+      margin-top: 15px;
+      cursor: pointer;
+      font-size: 14px;
+      opacity: 0.8;
+      transition: 0.3s;
+    }
+
+    .theme-toggle:hover {
+      opacity: 1;
+    }
+
     .gauge {
-      width: 280px;
+      width: 300px;
       height: 180px;
       margin: 35px auto 0;
       position: relative;
@@ -94,6 +134,7 @@
     }
 
     #needle {
+      transform-origin: center bottom;
       transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
@@ -127,6 +168,12 @@
 <body>
 
 <div class="container">
+
+  <!-- ЛОГОТИП -->
+  <svg class="logo" viewBox="0 0 24 24" fill="white">
+    <path d="M12 2a7 7 0 0 0-7 7v2H4a2 2 0 0 0 0 4h1v2a7 7 0 0 0 14 0v-2h1a2 2 0 0 0 0-4h-1V9a7 7 0 0 0-7-7z"/>
+  </svg>
+
   <h2>AI Presentation Detector</h2>
 
   <p class="description">
@@ -136,6 +183,8 @@
 
   <input type="file" id="fileInput" accept=".pptx">
   <button onclick="upload()">Перевірити</button>
+
+  <div class="theme-toggle" onclick="toggleTheme()">🌗 Перемкнути тему</div>
 
   <div id="loading" class="loading" style="display:none;">Обробка...</div>
 
@@ -193,9 +242,7 @@ function drawGauge(percent) {
   document.getElementById("arcPath").setAttribute("d", path);
 
   const angle = -90 + (180 * percent / 100);
-  const needle = document.getElementById("needle");
-  needle.style.transition = "transform 1.4s cubic-bezier(0.22, 1, 0.36, 1)";
-  needle.setAttribute("transform", `translate(100,120) rotate(${angle})`);
+  document.getElementById("needle").setAttribute("transform", `translate(100,120) rotate(${angle})`);
 }
 
 async function upload() {
@@ -225,6 +272,10 @@ async function upload() {
 
   document.getElementById("result").innerHTML =
     `Ймовірність AI: <b>${percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("light");
 }
 </script>
 
