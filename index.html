@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>AI Presentation Detector</title>
+
   <style>
     :root {
       --bg: linear-gradient(135deg, #6a11cb, #2575fc);
@@ -189,6 +190,7 @@
 
   <div class="gauge" id="gauge">
     <svg viewBox="0 0 200 140">
+
       <defs>
         <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#4caf50" />
@@ -197,6 +199,7 @@
         </linearGradient>
       </defs>
 
+      <!-- Півколо -->
       <path id="arcPath"
             d=""
             stroke="url(#aiGradient)"
@@ -204,10 +207,11 @@
             stroke-linecap="round"
             fill="none" />
 
+      <!-- СТРІЛКА ЯК У СПІДОМЕТРА -->
       <polygon id="needle"
-               points="0,-16 7,0 0,125 -7,0"
+               points="0,-12 6,0 0,90 -6,0"
                fill="white"
-               transform="rotate(-90)" />
+               transform="translate(100,120) rotate(-90)" />
     </svg>
 
     <div class="labels">
@@ -239,13 +243,12 @@ function drawGauge(percent) {
   document.getElementById("arcPath").setAttribute("d", path);
 
   const angle = -90 + (180 * percent / 100);
-  document.getElementById("needle").setAttribute("transform", `rotate(${angle})`);
+  document.getElementById("needle")
+    .setAttribute("transform", `translate(100,120) rotate(${angle})`);
 }
 
 async function upload() {
-  const fileInput = document.getElementById("fileInput");
-  const file = fileInput.files[0];
-
+  const file = document.getElementById("fileInput").files[0];
   if (!file) {
     alert("Будь ласка, виберіть файл");
     return;
@@ -263,10 +266,6 @@ async function upload() {
       body: formData
     });
 
-    if (!res.ok) {
-      throw new Error("Помилка запиту");
-    }
-
     const data = await res.json();
     const percent = Number(data.ai_percent);
 
@@ -278,8 +277,7 @@ async function upload() {
       `Ймовірність AI: <b>${percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
   } catch (e) {
     document.getElementById("loading").style.display = "none";
-    alert("Сталася помилка під час перевірки");
-    console.error(e);
+    alert("Помилка під час перевірки");
   }
 }
 
