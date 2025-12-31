@@ -5,19 +5,14 @@
   <title>AI Presentation Detector</title>
 
   <style>
-    /*  
-      🎨 ТЕМИ (темна і світла)
-      Значення змінюються через class="light" на body
-    */
     :root {
-      --bg: linear-gradient(135deg, #6a11cb, #2575fc); /* фон темної теми */
-      --card-bg: rgba(255, 255, 255, 0.15); /* скляний ефект */
+      --bg: linear-gradient(135deg, #6a11cb, #2575fc);
+      --card-bg: rgba(255, 255, 255, 0.15);
       --text: white;
       --file-bg: rgba(255,255,255,0.1);
       --file-border: rgba(255,255,255,0.4);
     }
 
-    /* Світла тема */
     .light {
       --bg: linear-gradient(135deg, #ffffff, #d7d7d7);
       --card-bg: rgba(0, 0, 0, 0.1);
@@ -26,10 +21,6 @@
       --file-border: rgba(0,0,0,0.3);
     }
 
-    /*  
-      🧱 ОСНОВНИЙ СТИЛЬ СТОРІНКИ
-      Центрування, фон, шрифт
-    */
     body {
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg);
@@ -42,10 +33,6 @@
       transition: 0.4s;
     }
 
-    /*  
-      📦 КАРТКА-ОБГОРТКА
-      Скляний ефект + тінь
-    */
     .container {
       background: var(--card-bg);
       backdrop-filter: blur(14px);
@@ -57,32 +44,12 @@
       transition: 0.4s;
     }
 
-    /* Логотип */
     .logo {
       width: 70px;
       margin-bottom: 10px;
       opacity: 0.9;
     }
 
-    /* Заголовок */
-    h2 {
-      margin-bottom: 10px;
-      font-size: 30px;
-      font-weight: 700;
-    }
-
-    /* Опис */
-    .description {
-      font-size: 16px;
-      opacity: 0.9;
-      margin-bottom: 20px;
-      line-height: 1.4;
-    }
-
-    /*  
-      📁 КНОПКА ВИБОРУ ФАЙЛУ
-      Стилізована під інтерфейс
-    */
     input[type="file"] {
       margin: 20px 0 10px 0;
       padding: 12px 20px;
@@ -95,7 +62,6 @@
       transition: 0.3s;
     }
 
-    /* Стиль кнопки всередині input */
     input[type="file"]::file-selector-button {
       background: transparent;
       border: none;
@@ -107,13 +73,6 @@
       transition: 0.3s;
     }
 
-    input[type="file"]::file-selector-button:hover {
-      background: rgba(255,255,255,0.2);
-    }
-
-    /*  
-      🟡 КНОПКА "ПЕРЕВІРИТИ"
-    */
     button {
       background: #ffca28;
       color: #333;
@@ -127,12 +86,6 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
 
-    button:hover {
-      background: #ffd95b;
-      transform: scale(1.05);
-    }
-
-    /* Перемикач теми */
     .theme-toggle {
       margin-top: 15px;
       cursor: pointer;
@@ -141,13 +94,6 @@
       transition: 0.3s;
     }
 
-    .theme-toggle:hover {
-      opacity: 1;
-    }
-
-    /*  
-      🧭 ГРАФІК (півколо + стрілка)
-    */
     .gauge {
       width: 300px;
       height: 180px;
@@ -155,49 +101,16 @@
       position: relative;
     }
 
-    .gauge svg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-    }
-
-    /*  
-      📌 СТРІЛКА СПІДОМЕТРА
-      transform-origin — точка обертання (низ стрілки)
-    */
     #needle {
       transform-box: fill-box;
       transform-origin: 50% 100%;
       transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    /* Підписи під графіком */
-    .labels {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 5px;
-      font-size: 14px;
-      opacity: 0.85;
-    }
-
-    /* Результат */
     #result {
       margin-top: 25px;
       font-size: 22px;
       font-weight: bold;
-    }
-
-    /* Анімація "Обробка..." */
-    .loading {
-      margin-top: 20px;
-      font-size: 18px;
-      animation: pulse 1.2s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.4 }
-      50% { opacity: 1 }
-      100% { opacity: 0.4 }
     }
   </style>
 </head>
@@ -205,158 +118,84 @@
 
 <div class="container">
 
-  <!-- ЛОГОТИП -->
   <svg class="logo" viewBox="0 0 24 24" fill="white">
     <path d="M12 2a7 7 0 0 0-7 7v2H4a2 2 0 0 0 0 4h1v2a7 7 0 0 0 14 0v-2h1a2 2 0 0 0 0-4h-1V9a7 7 0 0 0-7-7z"/>
   </svg>
 
   <h2>AI Presentation Detector</h2>
 
-  <p class="description">
-    Це сучасний онлайн‑сервіс для перевірки презентацій на наявність тексту, створеного штучним інтелектом.<br>
-    Мова інтерфейсу: <b>Українська</b>.
-  </p>
-
-  <!-- ВИБІР ФАЙЛУ -->
   <input type="file" id="fileInput" accept=".pptx">
+  <button onclick="upload()">Перевірити</button>
 
-  <!-- КНОПКА ПЕРЕВІРКИ -->
-  <button type="button" onclick="upload()">Перевірити</button>
-
-  <!-- ПЕРЕМИКАЧ ТЕМИ -->
   <div class="theme-toggle" onclick="toggleTheme()">🌗 Перемкнути тему</div>
 
-  <!-- ТЕКСТ "ОБРОБКА..." -->
-  <div id="loading" class="loading" style="display:none;">Обробка...</div>
-
-  <!-- ГРАФІК -->
-  <div class="gauge" id="gauge">
+  <!-- ГРАФІК ЗАВЖДИ ВИДИМИЙ -->
+  <div class="gauge">
     <svg viewBox="0 0 200 140">
 
-      <!-- Градієнт для півкола -->
       <defs>
+        <!-- ГРАДІЄНТ 0–30 зелений, 30–60 жовтий, 60–100 червоний -->
         <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#4caf50" />
-          <stop offset="30%" stop-color="#ff9800" />
+          <stop offset="30%" stop-color="#4caf50" />
+          <stop offset="60%" stop-color="#ff9800" />
           <stop offset="100%" stop-color="#f44336" />
         </linearGradient>
       </defs>
 
-      <!-- ПІВКОЛО -->
+      <!-- ПІВКОЛО (видиме завжди) -->
       <path id="arcPath"
-            d=""
+            d="M 5 120 A 95 95 0 0 1 195 120"
             stroke="url(#aiGradient)"
             stroke-width="16"
             stroke-linecap="round"
             fill="none" />
 
-      <!--  
-        СТРІЛКА СПІДОМЕТРА  
-        translate(100,120) — ставить основу стрілки в центр півкола  
-        rotate(-90) — початкова позиція (вниз)
-      -->
+      <!-- СТРІЛКА (видима завжди, стоїть на 0%) -->
       <polygon id="needle"
-               points="0,-12 6,0 0,90 -6,0"
+               points="0,-10 5,0 0,70 -5,0"
                fill="white"
-               transform="translate(100,300) rotate(-90)" />
+               transform="translate(100,105) rotate(-90)" />
     </svg>
-
-    <!-- ПІДПИСИ -->
-    <div class="labels">
-      <span>Низька ймовірність</span>
-      <span>Висока</span>
-    </div>
   </div>
 
-  <!-- ВИВІД РЕЗУЛЬТАТУ -->
   <div id="result"></div>
 </div>
 
 <script>
-/*
-  🎯 ФУНКЦІЯ МАЛЮВАННЯ ПІВКОЛА ТА ОБЕРТАННЯ СТРІЛКИ
-*/
 function drawGauge(percent) {
-
-  // Центр півкола
-  const radius = 95;
-  const centerX = 100;
-  const centerY = 120;
-
-  // Кут початку (180°)
-  const startAngle = Math.PI;
-
-  // Кут кінця (залежить від %)
-  const endAngle = Math.PI + (Math.PI * percent / 100);
-
-  // Координати початку дуги
-  const x1 = centerX + radius * Math.cos(startAngle);
-  const y1 = centerY + radius * Math.sin(startAngle);
-
-  // Координати кінця дуги
-  const x2 = centerX + radius * Math.cos(endAngle);
-  const y2 = centerY + radius * Math.sin(endAngle);
-
-  // Чи малювати велику дугу (>50%)
-  const largeArcFlag = percent > 50 ? 1 : 0;
-
-  // Формуємо шлях SVG
-  const path = `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`;
-
-  // Малюємо дугу
-  document.getElementById("arcPath").setAttribute("d", path);
-
-  // Обчислюємо кут стрілки
+  // Обчислюємо кут
   const angle = -90 + (180 * percent / 100);
 
-  // Обертаємо стрілку навколо центру півкола
+  // Плавно обертаємо стрілку
   document.getElementById("needle")
-    .setAttribute("transform", `translate(100,300) rotate(${angle})`);
+    .setAttribute("transform", `translate(100,105) rotate(${angle})`);
 }
 
-/*
-  📤 ВІДПРАВКА ФАЙЛУ НА СЕРВЕР
-*/
 async function upload() {
   const file = document.getElementById("fileInput").files[0];
-
   if (!file) {
     alert("Будь ласка, виберіть файл");
     return;
   }
 
-  document.getElementById("loading").style.display = "block";
-  document.getElementById("result").innerHTML = "";
-
   const formData = new FormData();
   formData.append("file", file);
 
-  try {
-    const res = await fetch("/predict", {
-      method: "POST",
-      body: formData
-    });
+  const res = await fetch("/predict", {
+    method: "POST",
+    body: formData
+  });
 
-    const data = await res.json();
-    const percent = Number(data.ai_percent);
+  const data = await res.json();
+  const percent = Number(data.ai_percent);
 
-    document.getElementById("loading").style.display = "none";
+  drawGauge(percent);
 
-    // Малюємо графік
-    drawGauge(percent);
-
-    // Виводимо результат
-    document.getElementById("result").innerHTML =
-      `Ймовірність AI: <b>${percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
-  } catch (e) {
-    document.getElementById("loading").style.display = "none";
-    alert("Помилка під час перевірки");
-  }
+  document.getElementById("result").innerHTML =
+    `Ймовірність AI: <b>${percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
 }
 
-/*
-  🌗 ПЕРЕМИКАЧ ТЕМИ
-*/
 function toggleTheme() {
   document.body.classList.toggle("light");
 }
