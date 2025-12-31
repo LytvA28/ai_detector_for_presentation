@@ -11,13 +11,15 @@
       --file-bg: rgba(255,255,255,0.1);
       --file-border: rgba(255,255,255,0.4);
     }
+
     .light {
       --bg: linear-gradient(135deg, #ffffff, #d7d7d7);
       --card-bg: rgba(0, 0, 0, 0.1);
       --text: #222;
-      --file-bg: rgba(0,0,0,0.1);
+      --file-bg: rgba(0,0,0,0.05);
       --file-border: rgba(0,0,0,0.3);
     }
+
     body {
       font-family: 'Segoe UI', sans-serif;
       background: var(--bg);
@@ -29,6 +31,7 @@
       color: var(--text);
       transition: 0.4s;
     }
+
     .container {
       background: var(--card-bg);
       backdrop-filter: blur(14px);
@@ -39,22 +42,26 @@
       box-shadow: 0 10px 40px rgba(0,0,0,0.25);
       transition: 0.4s;
     }
+
     .logo {
       width: 70px;
       margin-bottom: 10px;
       opacity: 0.9;
     }
+
     h2 {
       margin-bottom: 10px;
       font-size: 30px;
       font-weight: 700;
     }
+
     .description {
       font-size: 16px;
       opacity: 0.9;
       margin-bottom: 20px;
       line-height: 1.4;
     }
+
     input[type="file"] {
       margin: 20px 0 10px 0;
       padding: 12px 20px;
@@ -66,6 +73,7 @@
       width: 80%;
       transition: 0.3s;
     }
+
     input[type="file"]::file-selector-button {
       background: transparent;
       border: none;
@@ -76,9 +84,11 @@
       border-radius: 8px;
       transition: 0.3s;
     }
+
     input[type="file"]::file-selector-button:hover {
       background: rgba(255,255,255,0.2);
     }
+
     button {
       background: #ffca28;
       color: #333;
@@ -91,10 +101,12 @@
       transition: 0.3s;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
+
     button:hover {
       background: #ffd95b;
       transform: scale(1.05);
     }
+
     .theme-toggle {
       margin-top: 15px;
       cursor: pointer;
@@ -102,25 +114,30 @@
       opacity: 0.8;
       transition: 0.3s;
     }
+
     .theme-toggle:hover {
       opacity: 1;
     }
+
     .gauge {
       width: 300px;
       height: 180px;
       margin: 35px auto 0;
       position: relative;
     }
+
     .gauge svg {
       width: 100%;
       height: 100%;
       overflow: visible;
     }
+
     #needle {
       transform-box: fill-box;
       transform-origin: 50% 100%;
       transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
     }
+
     .labels {
       display: flex;
       justify-content: space-between;
@@ -128,16 +145,19 @@
       font-size: 14px;
       opacity: 0.85;
     }
+
     #result {
       margin-top: 25px;
       font-size: 22px;
       font-weight: bold;
     }
+
     .loading {
       margin-top: 20px;
       font-size: 18px;
       animation: pulse 1.2s infinite;
     }
+
     @keyframes pulse {
       0% { opacity: 0.4 }
       50% { opacity: 1 }
@@ -161,7 +181,7 @@
   </p>
 
   <input type="file" id="fileInput" accept=".pptx">
-  <button onclick="upload()">Перевірити</button>
+  <button type="button" onclick="upload()">Перевірити</button>
 
   <div class="theme-toggle" onclick="toggleTheme()">🌗 Перемкнути тему</div>
 
@@ -182,13 +202,11 @@
             stroke="url(#aiGradient)"
             stroke-width="16"
             stroke-linecap="round"
-            fill="none"
-            style="filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.35));" />
+            fill="none" />
 
       <polygon id="needle"
                points="0,-16 7,0 0,125 -7,0"
                fill="white"
-               style="filter: drop-shadow(0px 0px 6px rgba(0,0,0,0.45));"
                transform="rotate(-90)" />
     </svg>
 
@@ -225,4 +243,50 @@ function drawGauge(percent) {
 }
 
 async function upload() {
-  const file = document.getElementById("fileInput").files
+  const fileInput = document.getElementById("fileInput");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Будь ласка, виберіть файл");
+    return;
+  }
+
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("result").innerHTML = "";
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  try {
+    const res = await fetch("/predict", {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) {
+      throw new Error("Помилка запиту");
+    }
+
+    const data = await res.json();
+    const percent = Number(data.ai_percent);
+
+    document.getElementById("loading").style.display = "none";
+
+    drawGauge(percent);
+
+    document.getElementById("result").innerHTML =
+      `Ймовірність AI: <b>${percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
+  } catch (e) {
+    document.getElementById("loading").style.display = "none";
+    alert("Сталася помилка під час перевірки");
+    console.error(e);
+  }
+}
+
+function toggleTheme() {
+  document.body.classList.toggle("light");
+}
+</script>
+
+</body>
+</html>
