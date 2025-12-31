@@ -1,194 +1,223 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <title>AI Presentation Detector</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #6a11cb, #2575fc);
-            height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 1.2s ease-in-out;
-        }
+  <meta charset="UTF-8">
+  <title>AI Presentation Detector</title>
 
-        @keyframes fadeIn {
-            from { opacity: 0 }
-            to { opacity: 1 }
-        }
+  <!-- ===== CSS (СТИЛІ) ===== -->
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 1.2s ease-in-out;
+    }
 
-        .container {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            padding: 40px;
-            border-radius: 20px;
-            width: 450px;
-            text-align: center;
-            color: white;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-            animation: slideUp 0.8s ease-out;
-        }
+    @keyframes fadeIn {
+      from { opacity: 0 }
+      to { opacity: 1 }
+    }
 
-        @keyframes slideUp {
-            from { transform: translateY(40px); opacity: 0 }
-            to { transform: translateY(0); opacity: 1 }
-        }
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      padding: 40px;
+      border-radius: 20px;
+      width: 480px;
+      text-align: center;
+      color: white;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      animation: slideUp 0.8s ease-out;
+    }
 
-        h2 {
-            margin-bottom: 10px;
-            font-size: 28px;
-            font-weight: 600;
-        }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0 }
+      to { transform: translateY(0); opacity: 1 }
+    }
 
-        .description {
-            font-size: 15px;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
+    h2 {
+      margin-bottom: 10px;
+      font-size: 28px;
+      font-weight: 600;
+    }
 
-        input[type="file"] {
-            margin: 20px 0 10px 0;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            cursor: pointer;
-        }
+    .description {
+      font-size: 15px;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
 
-        button {
-            background: #ffca28;
-            color: #333;
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: 0.3s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
+    input[type="file"] {
+      margin: 20px 0 10px 0;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      cursor: pointer;
+    }
 
-        button:hover {
-            background: #ffd95b;
-            transform: scale(1.05);
-        }
+    button {
+      background: #ffca28;
+      color: #333;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
 
-        .gauge {
-            width: 200px;
-            height: 100px;
-            margin: 25px auto 0;
-            position: relative;
-        }
+    button:hover {
+      background: #ffd95b;
+      transform: scale(1.05);
+    }
 
-        .gauge .arc {
-            width: 100%;
-            height: 100%;
-            border-radius: 200px 200px 0 0;
-            border: 12px solid;
-            border-bottom: none;
-            transform-origin: center bottom;
-            transform: rotate(-90deg);
-            transition: border-color 0.5s ease;
-        }
+    .gauge {
+      width: 240px;
+      height: 140px;
+      margin: 30px auto 0;
+      position: relative;
+    }
 
-        .needle {
-            width: 4px;
-            height: 90px;
-            background: white;
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform-origin: bottom center;
-            transform: rotate(-90deg);
-            transition: transform 1s ease-out;
-        }
+    .gauge svg {
+      width: 100%;
+      height: 100%;
+    }
 
-        #result {
-            margin-top: 20px;
-            font-size: 20px;
-            font-weight: bold;
-        }
+    .labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+      font-size: 13px;
+      opacity: 0.8;
+    }
 
-        .loading {
-            margin-top: 20px;
-            font-size: 18px;
-            animation: pulse 1.2s infinite;
-        }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+    }
 
-        @keyframes pulse {
-            0% { opacity: 0.4 }
-            50% { opacity: 1 }
-            100% { opacity: 0.4 }
-        }
-    </style>
+    .loading {
+      margin-top: 20px;
+      font-size: 18px;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4 }
+      50% { opacity: 1 }
+      100% { opacity: 0.4 }
+    }
+  </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>AI Presentation Detector</h2>
+  <h2>AI Presentation Detector</h2>
 
-    <p class="description">
-        Це онлайн‑сервіс для перевірки презентацій на наявність тексту, створеного штучним інтелектом.  
-        Мова інтерфейсу: <b>Українська</b>.
-    </p>
+  <p class="description">
+    Це онлайн‑сервіс для перевірки презентацій на наявність тексту, створеного штучним інтелектом.<br>
+    Мова інтерфейсу: <b>Українська</b>.
+  </p>
 
-    <input type="file" id="fileInput" accept=".pptx">
-    <button onclick="upload()">Перевірити</button>
+  <input type="file" id="fileInput" accept=".pptx">
+  <button onclick="upload()">Перевірити</button>
 
-    <div id="loading" class="loading" style="display:none;">Обробка...</div>
+  <div id="loading" class="loading" style="display:none;">Обробка...</div>
 
-    <div class="gauge" id="gauge" style="display:none;">
-        <div class="arc" id="arc"></div>
-        <div class="needle" id="needle"></div>
+  <!-- ===== ГРАФІК ===== -->
+  <div class="gauge" id="gauge" style="display:none;">
+    <svg viewBox="0 0 200 120">
+      <defs>
+        <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#4caf50" />
+          <stop offset="50%" stop-color="#ff9800" />
+          <stop offset="100%" stop-color="#f44336" />
+        </linearGradient>
+      </defs>
+
+      <!-- Напівколо -->
+      <path id="arcPath" d="" stroke="url(#aiGradient)" stroke-width="12" fill="none" />
+
+      <!-- Стрілка -->
+      <polygon id="needle" points="0,-10 12,0 0,90 -12,0"
+               fill="white"
+               transform="translate(100,100) rotate(-90)" />
+    </svg>
+
+    <div class="labels">
+      <span>Низька ймовірність</span>
+      <span>Висока</span>
     </div>
+  </div>
 
-    <div id="result"></div>
+  <div id="result"></div>
 </div>
 
+<!-- ===== JAVASCRIPT ===== -->
 <script>
+function drawGauge(percent) {
+  const radius = 80;
+  const centerX = 100;
+  const centerY = 100;
+  const startAngle = -Math.PI;
+  const endAngle = startAngle + (Math.PI * percent / 100);
+
+  const x1 = centerX + radius * Math.cos(startAngle);
+  const y1 = centerY + radius * Math.sin(startAngle);
+  const x2 = centerX + radius * Math.cos(endAngle);
+  const y2 = centerY + radius * Math.sin(endAngle);
+
+  const largeArcFlag = percent > 50 ? 1 : 0;
+  const path = `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`;
+
+  const arc = document.getElementById("arcPath");
+  arc.setAttribute("d", path);
+
+  // Стрілка
+  const angle = -90 + (180 * percent / 100);
+  const needle = document.getElementById("needle");
+  needle.style.transition = "transform 1.2s ease-out";
+  needle.setAttribute("transform", `translate(100,100) rotate(${angle})`);
+}
+
 async function upload() {
-    const file = document.getElementById("fileInput").files[0];
-    if (!file) {
-        alert("Будь ласка, виберіть файл");
-        return;
-    }
+  const file = document.getElementById("fileInput").files[0];
+  if (!file) {
+    alert("Будь ласка, виберіть файл");
+    return;
+  }
 
-    document.getElementById("loading").style.display = "block";
-    document.getElementById("result").innerHTML = "";
-    document.getElementById("gauge").style.display = "none";
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("result").innerHTML = "";
+  document.getElementById("gauge").style.display = "none";
 
-    const formData = new FormData();
-    formData.append("file", file);
+  const formData = new FormData();
+  formData.append("file", file);
 
-    const res = await fetch("/predict", {
-        method: "POST",
-        body: formData
-    });
+  const res = await fetch("/predict", {
+    method: "POST",
+    body: formData
+  });
 
-    const data = await res.json();
+  const data = await res.json();
+  const percent = data.ai_percent;
 
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("gauge").style.display = "block";
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("gauge").style.display = "block";
 
-    const percent = data.ai_percent;
+  drawGauge(percent);
 
-    // Обчислення кута стрілки
-    const angle = -90 + (percent * 1.8);
-    document.getElementById("needle").style.transform = `rotate(${angle}deg)`;
-
-    // Колір напівкола
-    let color = "#4caf50"; // зелений
-    if (percent > 30 && percent < 60) color = "#ff9800"; // жовто-помаранчевий
-    if (percent >= 60) color = "#f44336"; // червоний
-
-    document.getElementById("arc").style.borderColor = color;
-
-    document.getElementById("result").innerHTML =
-        `Ймовірність AI: <b>${percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
+  document.getElementById("result").innerHTML =
+    `Ймовірність AI: <b>${percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
 }
 </script>
 
