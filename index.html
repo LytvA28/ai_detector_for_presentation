@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>AI Presentation Detector</title>
 
-  <!-- ===== CSS (СТИЛІ) ===== -->
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -24,13 +23,13 @@
 
     .container {
       background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
       padding: 40px;
-      border-radius: 20px;
-      width: 480px;
+      border-radius: 22px;
+      width: 500px;
       text-align: center;
       color: white;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
       animation: slideUp 0.8s ease-out;
     }
 
@@ -41,37 +40,39 @@
 
     h2 {
       margin-bottom: 10px;
-      font-size: 28px;
-      font-weight: 600;
+      font-size: 30px;
+      font-weight: 700;
     }
 
     .description {
-      font-size: 15px;
+      font-size: 16px;
       opacity: 0.9;
       margin-bottom: 20px;
+      line-height: 1.4;
     }
 
     input[type="file"] {
       margin: 20px 0 10px 0;
-      padding: 10px;
-      border-radius: 10px;
+      padding: 12px;
+      border-radius: 12px;
       border: none;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.25);
       color: white;
       cursor: pointer;
+      width: 80%;
     }
 
     button {
       background: #ffca28;
       color: #333;
-      padding: 12px 25px;
+      padding: 12px 30px;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 17px;
       font-weight: bold;
       transition: 0.3s;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
 
     button:hover {
@@ -80,28 +81,33 @@
     }
 
     .gauge {
-      width: 240px;
-      height: 140px;
-      margin: 30px auto 0;
+      width: 280px;
+      height: 180px;
+      margin: 35px auto 0;
       position: relative;
     }
 
     .gauge svg {
       width: 100%;
       height: 100%;
+      overflow: visible;
+    }
+
+    #needle {
+      transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .labels {
       display: flex;
       justify-content: space-between;
       margin-top: 5px;
-      font-size: 13px;
-      opacity: 0.8;
+      font-size: 14px;
+      opacity: 0.85;
     }
 
     #result {
-      margin-top: 20px;
-      font-size: 20px;
+      margin-top: 25px;
+      font-size: 22px;
       font-weight: bold;
     }
 
@@ -124,7 +130,7 @@
   <h2>AI Presentation Detector</h2>
 
   <p class="description">
-    Це онлайн‑сервіс для перевірки презентацій на наявність тексту, створеного штучним інтелектом.<br>
+    Це сучасний онлайн‑сервіс для перевірки презентацій на наявність тексту, створеного штучним інтелектом.<br>
     Мова інтерфейсу: <b>Українська</b>.
   </p>
 
@@ -133,9 +139,8 @@
 
   <div id="loading" class="loading" style="display:none;">Обробка...</div>
 
-  <!-- ===== ГРАФІК ===== -->
-  <div class="gauge" id="gauge" style="display:none;">
-    <svg viewBox="0 0 200 120">
+  <div class="gauge" id="gauge">
+    <svg viewBox="0 0 200 140">
       <defs>
         <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#4caf50" />
@@ -144,13 +149,19 @@
         </linearGradient>
       </defs>
 
-      <!-- Напівколо -->
-      <path id="arcPath" d="" stroke="url(#aiGradient)" stroke-width="12" fill="none" />
+      <path id="arcPath"
+            d=""
+            stroke="url(#aiGradient)"
+            stroke-width="16"
+            stroke-linecap="round"
+            fill="none"
+            style="filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.35));" />
 
-      <!-- Стрілка -->
-      <polygon id="needle" points="0,-10 12,0 0,90 -12,0"
+      <polygon id="needle"
+               points="0,-16 7,0 0,125 -7,0"
                fill="white"
-               transform="translate(100,100) rotate(-90)" />
+               style="filter: drop-shadow(0px 0px 6px rgba(0,0,0,0.45));"
+               transform="translate(100,120) rotate(-90)" />
     </svg>
 
     <div class="labels">
@@ -162,14 +173,14 @@
   <div id="result"></div>
 </div>
 
-<!-- ===== JAVASCRIPT ===== -->
 <script>
 function drawGauge(percent) {
-  const radius = 80;
+  const radius = 95;
   const centerX = 100;
-  const centerY = 100;
-  const startAngle = -Math.PI;
-  const endAngle = startAngle + (Math.PI * percent / 100);
+  const centerY = 120;
+
+  const startAngle = Math.PI;
+  const endAngle = Math.PI + (Math.PI * percent / 100);
 
   const x1 = centerX + radius * Math.cos(startAngle);
   const y1 = centerY + radius * Math.sin(startAngle);
@@ -177,16 +188,14 @@ function drawGauge(percent) {
   const y2 = centerY + radius * Math.sin(endAngle);
 
   const largeArcFlag = percent > 50 ? 1 : 0;
+
   const path = `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`;
+  document.getElementById("arcPath").setAttribute("d", path);
 
-  const arc = document.getElementById("arcPath");
-  arc.setAttribute("d", path);
-
-  // Стрілка
   const angle = -90 + (180 * percent / 100);
   const needle = document.getElementById("needle");
-  needle.style.transition = "transform 1.2s ease-out";
-  needle.setAttribute("transform", `translate(100,100) rotate(${angle})`);
+  needle.style.transition = "transform 1.4s cubic-bezier(0.22, 1, 0.36, 1)";
+  needle.setAttribute("transform", `translate(100,120) rotate(${angle})`);
 }
 
 async function upload() {
@@ -198,7 +207,6 @@ async function upload() {
 
   document.getElementById("loading").style.display = "block";
   document.getElementById("result").innerHTML = "";
-  document.getElementById("gauge").style.display = "none";
 
   const formData = new FormData();
   formData.append("file", file);
@@ -212,7 +220,6 @@ async function upload() {
   const percent = data.ai_percent;
 
   document.getElementById("loading").style.display = "none";
-  document.getElementById("gauge").style.display = "block";
 
   drawGauge(percent);
 
