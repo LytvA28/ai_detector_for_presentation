@@ -44,17 +44,6 @@
       margin-bottom: 10px;
       opacity: 0.9;
     }
-    h2 {
-      margin-bottom: 10px;
-      font-size: 30px;
-      font-weight: 700;
-    }
-    .description {
-      font-size: 16px;
-      opacity: 0.9;
-      margin-bottom: 20px;
-      line-height: 1.4;
-    }
     input[type="file"] {
       margin: 20px 0 10px 0;
       padding: 12px 20px;
@@ -64,16 +53,6 @@
       color: var(--text);
       cursor: pointer;
       width: 80%;
-      transition: 0.3s;
-    }
-    input[type="file"]::file-selector-button {
-      background: transparent;
-      border: none;
-      color: var(--text);
-      font-weight: bold;
-      cursor: pointer;
-      padding: 8px 16px;
-      border-radius: 8px;
       transition: 0.3s;
     }
     button {
@@ -101,15 +80,16 @@
       margin: 35px auto 0;
       position: relative;
     }
-    .gauge svg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-    }
     #needle {
       transform-box: fill-box;
       transform-origin: 50% 100%;
       transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #loading {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      display: none;
     }
     #result {
       margin-top: 25px;
@@ -133,8 +113,12 @@
 
   <div class="theme-toggle" onclick="toggleTheme()">🌗 Перемкнути тему</div>
 
+  <!-- Напис "Перевіряємо..." -->
+  <div id="loading">Перевіряємо...</div>
+
   <div class="gauge">
     <svg viewBox="0 0 200 140">
+
       <defs>
         <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="#4caf50" />
@@ -152,7 +136,7 @@
             stroke-linecap="round"
             fill="none" />
 
-      <!-- Стрілка, коротша, ковзає по дузі -->
+      <!-- Стрілка на Y = 50 -->
       <polygon id="needle"
                points="0,-10 5,0 0,60 -5,0"
                fill="white"
@@ -166,8 +150,10 @@
 <script>
 function drawGauge(percent) {
   const angle = -90 + (180 * percent / 100);
+
+  // Стрілка ковзає по дузі
   document.getElementById("needle")
-    .setAttribute("transform", `translate(100,100) rotate(${angle})`);
+    .setAttribute("transform", `translate(100,50) rotate(${angle})`);
 }
 
 async function upload() {
@@ -176,6 +162,9 @@ async function upload() {
     alert("Будь ласка, виберіть файл");
     return;
   }
+
+  document.getElementById("loading").style.display = "block";
+  document.getElementById("result").innerHTML = "";
 
   const formData = new FormData();
   formData.append("file", file);
@@ -189,6 +178,8 @@ async function upload() {
   const percent = Number(data.ai_percent);
 
   drawGauge(percent);
+
+  document.getElementById("loading").style.display = "none";
 
   document.getElementById("result").innerHTML =
     `Ймовірність AI: <b>${percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
