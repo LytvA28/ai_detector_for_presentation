@@ -1,4 +1,6 @@
 flask
 python-pptx
+python-docx
 scikit-learn
 joblib
+gunicorn

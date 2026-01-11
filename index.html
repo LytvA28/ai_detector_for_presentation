@@ -1,193 +1,247 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <title>AI Presentation Detector</title>
-  <style>
-    :root {
-      --bg: linear-gradient(135deg, #6a11cb, #2575fc);
-      --card-bg: rgba(255, 255, 255, 0.15);
-      --text: white;
-      --file-bg: rgba(255,255,255,0.1);
-      --file-border: rgba(255,255,255,0.4);
-    }
-    .light {
-      --bg: linear-gradient(135deg, #ffffff, #d7d7d7);
-      --card-bg: rgba(0, 0, 0, 0.1);
-      --text: #222;
-      --file-bg: rgba(0,0,0,0.05);
-      --file-border: rgba(0,0,0,0.3);
-    }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: var(--bg);
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: var(--text);
-      transition: 0.4s;
-    }
-    .container {
-      background: var(--card-bg);
-      backdrop-filter: blur(14px);
-      padding: 40px;
-      border-radius: 22px;
-      width: 520px;
-      text-align: center;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
-      transition: 0.4s;
-    }
-    .logo {
-      width: 70px;
-      margin-bottom: 10px;
-      opacity: 0.9;
-    }
-    input[type="file"] {
-      margin: 20px 0 10px 0;
-      padding: 12px 20px;
-      border-radius: 12px;
-      border: 2px solid var(--file-border);
-      background: var(--file-bg);
-      color: var(--text);
-      cursor: pointer;
-      width: 80%;
-      transition: 0.3s;
-    }
-    button {
-      background: #ffca28;
-      color: #333;
-      padding: 12px 30px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 17px;
-      font-weight: bold;
-      transition: 0.3s;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    }
-    .theme-toggle {
-      margin-top: 15px;
-      cursor: pointer;
-      font-size: 14px;
-      opacity: 0.8;
-      transition: 0.3s;
-    }
-    .gauge {
-      width: 300px;
-      height: 180px;
-      margin: 35px auto 0;
-      position: relative;
-    }
-    #needle {
-      transform-box: fill-box;
-      transform-origin: 50% 100%;
-      transition: transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-    #loading {
-      margin-top: 15px;
-      font-size: 18px;
-      font-weight: bold;
-      display: none;
-    }
-    #result {
-      margin-top: 25px;
-      font-size: 22px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Detector Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --bg: #0f172a;
+            --card: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Анімований фон */
+        body::before {
+            content: "";
+            position: absolute;
+            width: 300px; height: 300px;
+            background: var(--primary);
+            filter: blur(150px);
+            top: 10%; left: 10%;
+            z-index: -1;
+            opacity: 0.2;
+        }
+
+        .container {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 32px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 5px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+            font-weight: 600;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        h1 { font-size: 2rem; margin-bottom: 8px; font-weight: 700; }
+        p.subtitle { color: #94a3b8; margin-bottom: 30px; font-size: 0.9rem; }
+
+        .input-group { margin-bottom: 20px; }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 15px;
+            color: white;
+            font-family: inherit;
+            resize: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        textarea:focus { border-color: var(--primary); outline: none; }
+
+        .file-upload {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .file-upload:hover { border-color: var(--primary); background: rgba(255,255,255,0.05); }
+
+        .check-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .check-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3); }
+
+        /* Gauge */
+        .result-section { margin-top: 30px; display: none; }
+        .gauge-container { width: 200px; margin: 0 auto; position: relative; }
+        #needle { transition: transform 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); transform-origin: center; }
+
+        .verdict-text { font-size: 1.5rem; margin-top: 15px; font-weight: 700; }
+        .percentage { color: var(--primary); font-size: 2rem; }
+
+        #loader { display: none; margin-top: 20px; color: var(--primary); }
+    </style>
 </head>
 <body>
 
 <div class="container">
+    <h1>AI Detector Pro</h1>
+    <p class="subtitle">Перевірте презентації та тексти на наявність ШІ</p>
 
-  <svg class="logo" viewBox="0 0 24 24" fill="white">
-    <path d="M12 2a7 7 0 0 0-7 7v2H4a2 2 0 0 0 0 4h1v2a7 7 0 0 0 14 0v-2h1a2 2 0 0 0 0-4h-1V9a7 7 0 0 0-7-7z"/>
-  </svg>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="setMode('file')">📁 Файли (.pptx, .docx)</button>
+        <button class="tab-btn" onclick="setMode('text')">✍️ Текст</button>
+    </div>
 
-  <h2>AI Presentation Detector</h2>
+    <div id="fileSection">
+        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
+            <p id="fileNameDisplay">Натисніть або перетягніть файл сюди</p>
+            <span style="font-size: 0.8rem; color: #94a3b8;">Підтримуються: .pptx, .docx, .txt</span>
+            <input type="file" id="fileInput" hidden accept=".pptx,.docx,.txt" onchange="updateFileName()">
+        </div>
+    </div>
 
-  <input type="file" id="fileInput" accept=".pptx">
-  <button onclick="upload()">Перевірити</button>
+    <div id="textSection" style="display: none;">
+        <textarea id="textInput" placeholder="Вставте ваш текст сюди (мінімум 10 слів)..."></textarea>
+    </div>
 
-  <div class="theme-toggle" onclick="toggleTheme()">🌗 Перемкнути тему</div>
+    <button class="check-btn" onclick="processAnalysis()">ПЕРЕВІРИТИ</button>
 
-  <!-- Напис "Перевіряємо..." -->
-  <div id="loading">Перевіряємо...</div>
+    <div id="loader">Аналізуємо структуру тексту...</div>
 
-  <div class="gauge">
-    <svg viewBox="0 0 200 140">
-
-      <defs>
-        <linearGradient id="aiGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stop-color="#4caf50" />
-          <stop offset="30%" stop-color="#4caf50" />
-          <stop offset="60%" stop-color="#ff9800" />
-          <stop offset="100%" stop-color="#f44336" />
-        </linearGradient>
-      </defs>
-
-      <!-- Піднята дуга -->
-      <path id="arcPath"
-            d="M 5 100 A 95 95 0 0 1 195 100"
-            stroke="url(#aiGradient)"
-            stroke-width="16"
-            stroke-linecap="round"
-            fill="none" />
-
-      <!-- Стрілка на Y = 50 -->
-      <polygon id="needle"
-               points="0,-10 5,0 0,60 -5,0"
-               fill="white"
-               transform="translate(100,50) rotate(-90)" />
-    </svg>
-  </div>
-
-  <div id="result"></div>
+    <div class="result-section" id="resultArea">
+        <div class="gauge-container">
+            <svg viewBox="0 0 100 60">
+                <path d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/>
+                <path id="gaugeProgress" d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="url(#grad)" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="126" stroke-linecap="round" style="transition: 1.5s;"/>
+                <defs>
+                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#4facfe" />
+                        <stop offset="100%" style="stop-color:#00f2fe" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <div id="percLabel" style="position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%); font-size: 1.2rem; font-weight: bold;">0%</div>
+        </div>
+        <div class="verdict-text" id="verdictLabel">...</div>
+    </div>
 </div>
 
 <script>
-function drawGauge(percent) {
-  const angle = -90 + (180 * percent / 100);
+    let currentMode = 'file';
 
-  // Стрілка ковзає по дузі
-  document.getElementById("needle")
-    .setAttribute("transform", `translate(100,50) rotate(${angle})`);
-}
+    function setMode(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.getElementById('fileSection').style.display = mode === 'file' ? 'block' : 'none';
+        document.getElementById('textSection').style.display = mode === 'text' ? 'block' : 'none';
+        document.getElementById('resultArea').style.display = 'none';
+    }
 
-async function upload() {
-  const file = document.getElementById("fileInput").files[0];
-  if (!file) {
-    alert("Будь ласка, виберіть файл");
-    return;
-  }
+    function updateFileName() {
+        const input = document.getElementById('fileInput');
+        document.getElementById('fileNameDisplay').innerText = input.files[0] ? input.files[0].name : "Файл не обрано";
+    }
 
-  document.getElementById("loading").style.display = "block";
-  document.getElementById("result").innerHTML = "";
+    async function processAnalysis() {
+        const resultArea = document.getElementById('resultArea');
+        const loader = document.getElementById('loader');
+        
+        let payload;
+        let isFile = currentMode === 'file';
 
-  const formData = new FormData();
-  formData.append("file", file);
+        if (isFile) {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) return alert("Будь ласка, оберіть файл");
+            payload = new FormData();
+            payload.append('file', file);
+        } else {
+            const text = document.getElementById('textInput').value;
+            if (text.length < 20) return alert("Текст занадто короткий");
+            payload = JSON.stringify({ text: text });
+        }
 
-  const res = await fetch("/predict", {
-    method: "POST",
-    body: formData
-  });
+        loader.display = 'block';
+        resultArea.style.display = 'none';
 
-  const data = await res.json();
-  const percent = Number(data.ai_percent);
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: isFile ? {} : { 'Content-Type': 'application/json' },
+                body: payload
+            });
 
-  drawGauge(percent);
+            const data = await response.json();
+            
+            loader.style.display = 'none';
+            resultArea.style.display = 'block';
+            
+            // Анімація прогресу
+            const offset = 126 - (126 * data.ai_percent / 100);
+            document.getElementById('gaugeProgress').style.strokeDashoffset = offset;
+            document.getElementById('percLabel').innerText = data.ai_percent + '%';
+            document.getElementById('verdictLabel').innerText = data.verdict;
+            document.getElementById('verdictLabel').style.color = data.ai_percent > 50 ? '#ff4d4d' : '#00f2fe';
 
-  document.getElementById("loading").style.display = "none";
-
-  document.getElementById("result").innerHTML =
-    `Ймовірність AI: <b>${percent}%</b><br>Вердикт: <b>${data.verdict}</b>`;
-}
-
-function toggleTheme() {
-  document.body.classList.toggle("light");
-}
+        } catch (e) {
+            alert("Помилка при аналізі");
+            loader.style.display = 'none';
+        }
+    }
 </script>
 
 </body>
