@@ -1,247 +1,291 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Detector Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #00f2fe;
-            --secondary: #4facfe;
-            --bg: #0f172a;
-            --card: rgba(30, 41, 59, 0.7);
-            --text: #f8fafc;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Detector Pro</title>
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            background: radial-gradient(circle at top right, #1e293b, #0f172a);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-        /* Анімований фон */
-        body::before {
-            content: "";
-            position: absolute;
-            width: 300px; height: 300px;
-            background: var(--primary);
-            filter: blur(150px);
-            top: 10%; left: 10%;
-            z-index: -1;
-            opacity: 0.2;
-        }
+<style>
+/* Основні кольори і тема */
+:root{
+  --primary:#00f2fe;
+  --secondary:#4facfe;
+  --bg:#020617;
+  --card:rgba(15,23,42,.85);
+  --text:#f8fafc;
+}
 
-        .container {
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px;
-            border-radius: 32px;
-            width: 100%;
-            max-width: 600px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            text-align: center;
-        }
+*{box-sizing:border-box;}
 
-        .tabs {
-            display: flex;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 5px;
-            border-radius: 16px;
-            margin-bottom: 30px;
-        }
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:Inter,sans-serif;
+  background:radial-gradient(circle at 20% 20%,#0f172a,#020617);
+  color:var(--text);
+}
 
-        .tab-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            color: #94a3b8;
-            cursor: pointer;
-            font-weight: 600;
-            border-radius: 12px;
-            transition: 0.3s;
-        }
+/* Легке світіння на фоні */
+.glow{
+  position:absolute;
+  width:300px;
+  height:300px;
+  background:var(--primary);
+  filter:blur(160px);
+  opacity:.15;
+  top:10%;
+  left:15%;
+  z-index:-1;
+}
 
-        .tab-btn.active {
-            background: var(--secondary);
-            color: white;
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
-        }
+/* Основна картка */
+.container{
+  background:var(--card);
+  backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:32px;
+  padding:40px;
+  width:100%;
+  max-width:650px;
+  box-shadow:0 40px 80px rgba(0,0,0,.7);
+}
 
-        h1 { font-size: 2rem; margin-bottom: 8px; font-weight: 700; }
-        p.subtitle { color: #94a3b8; margin-bottom: 30px; font-size: 0.9rem; }
+h1{text-align:center;margin:0;font-size:2.2rem;}
+.subtitle{text-align:center;color:#94a3b8;margin-top:6px;}
 
-        .input-group { margin-bottom: 20px; }
+/* Вкладки */
+.tabs{
+  display:flex;
+  gap:10px;
+  margin:30px 0;
+  background:#020617;
+  padding:6px;
+  border-radius:18px;
+}
 
-        textarea {
-            width: 100%;
-            height: 150px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 15px;
-            color: white;
-            font-family: inherit;
-            resize: none;
-            box-sizing: border-box;
-            transition: 0.3s;
-        }
+.tab-btn{
+  flex:1;
+  padding:14px;
+  border:none;
+  background:transparent;
+  color:#94a3b8;
+  font-weight:600;
+  border-radius:14px;
+  cursor:pointer;
+  transition:.25s;
+}
 
-        textarea:focus { border-color: var(--primary); outline: none; }
+.tab-btn.active{
+  background:linear-gradient(90deg,var(--secondary),var(--primary));
+  color:white;
+}
 
-        .file-upload {
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            padding: 30px;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+/* Поля введення */
+textarea{
+  width:100%;
+  height:150px;
+  padding:16px;
+  border-radius:18px;
+  background:#020617;
+  border:1px solid rgba(255,255,255,.08);
+  color:white;
+  resize:none;
+}
 
-        .file-upload:hover { border-color: var(--primary); background: rgba(255,255,255,0.05); }
+/* Блок завантаження файлів */
+.file-upload{
+  padding:35px;
+  border-radius:20px;
+  border:2px dashed rgba(255,255,255,.15);
+  background:#020617;
+  cursor:pointer;
+}
 
-        .check-btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 16px;
-            border: none;
-            background: linear-gradient(90deg, var(--secondary), var(--primary));
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
+/* Кнопка перевірки */
+.check-btn{
+  width:100%;
+  padding:18px;
+  border-radius:20px;
+  border:none;
+  background:linear-gradient(90deg,var(--secondary),var(--primary));
+  color:white;
+  font-size:1.1rem;
+  font-weight:700;
+  margin-top:20px;
+  cursor:pointer;
+}
 
-        .check-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3); }
+#loader{
+  display:none;
+  margin-top:20px;
+  text-align:center;
+  color:var(--primary);
+}
 
-        /* Gauge */
-        .result-section { margin-top: 30px; display: none; }
-        .gauge-container { width: 200px; margin: 0 auto; position: relative; }
-        #needle { transition: transform 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67); transform-origin: center; }
+/* Результат */
+.result{
+  display:none;
+  text-align:center;
+  margin-top:25px;
+}
 
-        .verdict-text { font-size: 1.5rem; margin-top: 15px; font-weight: 700; }
-        .percentage { color: var(--primary); font-size: 2rem; }
+.percent{font-size:2.8rem;color:var(--primary);}
+.verdict{font-size:1.4rem;font-weight:700;}
 
-        #loader { display: none; margin-top: 20px; color: var(--primary); }
-    </style>
+/* Історія перевірок */
+.history{
+  margin-top:30px;
+}
+
+.history-item{
+  background:#020617;
+  padding:12px 16px;
+  border-radius:14px;
+  margin-bottom:8px;
+  font-size:.9rem;
+  display:flex;
+  justify-content:space-between;
+}
+</style>
 </head>
+
 <body>
+<div class="glow"></div>
 
 <div class="container">
-    <h1>AI Detector Pro</h1>
-    <p class="subtitle">Перевірте презентації та тексти на наявність ШІ</p>
 
-    <div class="tabs">
-        <button class="tab-btn active" onclick="setMode('file')">📁 Файли (.pptx, .docx)</button>
-        <button class="tab-btn" onclick="setMode('text')">✍️ Текст</button>
-    </div>
+<h1>AI Detector Pro</h1>
+<div class="subtitle">Перевірка текстів і файлів на ШІ</div>
 
-    <div id="fileSection">
-        <div class="file-upload" onclick="document.getElementById('fileInput').click()">
-            <p id="fileNameDisplay">Натисніть або перетягніть файл сюди</p>
-            <span style="font-size: 0.8rem; color: #94a3b8;">Підтримуються: .pptx, .docx, .txt</span>
-            <input type="file" id="fileInput" hidden accept=".pptx,.docx,.txt" onchange="updateFileName()">
-        </div>
-    </div>
+<div class="tabs">
+  <button class="tab-btn active" onclick="setMode('file',this)">Файл</button>
+  <button class="tab-btn" onclick="setMode('text',this)">Текст</button>
+</div>
 
-    <div id="textSection" style="display: none;">
-        <textarea id="textInput" placeholder="Вставте ваш текст сюди (мінімум 10 слів)..."></textarea>
-    </div>
+<div id="fileBlock">
+  <div class="file-upload" onclick="fileInput.click()">
+    <div id="fileLabel">Натисніть, щоб обрати файл</div>
+    <input type="file" id="fileInput" hidden accept=".pptx,.docx,.txt">
+  </div>
+</div>
 
-    <button class="check-btn" onclick="processAnalysis()">ПЕРЕВІРИТИ</button>
+<div id="textBlock" style="display:none">
+  <textarea id="textInput" placeholder="Вставте текст для перевірки..."></textarea>
+</div>
 
-    <div id="loader">Аналізуємо структуру тексту...</div>
+<button class="check-btn" onclick="analyze()">Перевірити</button>
 
-    <div class="result-section" id="resultArea">
-        <div class="gauge-container">
-            <svg viewBox="0 0 100 60">
-                <path d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/>
-                <path id="gaugeProgress" d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="url(#grad)" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="126" stroke-linecap="round" style="transition: 1.5s;"/>
-                <defs>
-                    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#4facfe" />
-                        <stop offset="100%" style="stop-color:#00f2fe" />
-                    </linearGradient>
-                </defs>
-            </svg>
-            <div id="percLabel" style="position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%); font-size: 1.2rem; font-weight: bold;">0%</div>
-        </div>
-        <div class="verdict-text" id="verdictLabel">...</div>
-    </div>
+<div id="loader">Аналізуємо текст…</div>
+
+<div class="result" id="result">
+  <div class="percent" id="percent">0%</div>
+  <div class="verdict" id="verdict"></div>
+</div>
+
+<div class="history">
+  <h3 style="color:#94a3b8;">Історія перевірок</h3>
+  <div id="historyList"></div>
+</div>
+
 </div>
 
 <script>
-    let currentMode = 'file';
+let currentMode = "file";
 
-    function setMode(mode) {
-        currentMode = mode;
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        document.getElementById('fileSection').style.display = mode === 'file' ? 'block' : 'none';
-        document.getElementById('textSection').style.display = mode === 'text' ? 'block' : 'none';
-        document.getElementById('resultArea').style.display = 'none';
+// Перемикає між вкладками Файл / Текст
+function setMode(mode, button){
+  currentMode = mode;
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  button.classList.add("active");
+
+  fileBlock.style.display = mode === "file" ? "block" : "none";
+  textBlock.style.display = mode === "text" ? "block" : "none";
+  result.style.display = "none";
+}
+
+// Показує назву обраного файлу
+fileInput.onchange = () => {
+  fileLabel.innerText = fileInput.files[0]?.name || "Файл не обрано";
+};
+
+// Зберігає одну перевірку в LocalStorage
+function saveToHistory(label, percent){
+  const history = JSON.parse(localStorage.getItem("aiHistory") || "[]");
+  history.unshift({
+    name: label,
+    value: percent,
+    time: new Date().toLocaleString()
+  });
+
+  localStorage.setItem("aiHistory", JSON.stringify(history.slice(0,10)));
+  renderHistory();
+}
+
+// Малює історію на екрані
+function renderHistory(){
+  const history = JSON.parse(localStorage.getItem("aiHistory") || "[]");
+  historyList.innerHTML = "";
+
+  history.forEach(item => {
+    const row = document.createElement("div");
+    row.className = "history-item";
+    row.innerHTML = `<span>${item.name}</span><span>${item.value}%</span>`;
+    historyList.appendChild(row);
+  });
+}
+
+// Відправляє дані на сервер і отримує результат
+async function analyze(){
+  loader.style.display = "block";
+  result.style.display = "none";
+
+  let requestBody;
+  let headers = {};
+  let label = "Текст";
+
+  if(currentMode === "file"){
+    if(!fileInput.files[0]){
+      alert("Оберіть файл");
+      loader.style.display = "none";
+      return;
     }
-
-    function updateFileName() {
-        const input = document.getElementById('fileInput');
-        document.getElementById('fileNameDisplay').innerText = input.files[0] ? input.files[0].name : "Файл не обрано";
+    requestBody = new FormData();
+    requestBody.append("file", fileInput.files[0]);
+    label = fileInput.files[0].name;
+  }else{
+    if(textInput.value.length < 20){
+      alert("Текст занадто короткий");
+      loader.style.display = "none";
+      return;
     }
+    requestBody = JSON.stringify({ text: textInput.value });
+    headers["Content-Type"] = "application/json";
+  }
 
-    async function processAnalysis() {
-        const resultArea = document.getElementById('resultArea');
-        const loader = document.getElementById('loader');
-        
-        let payload;
-        let isFile = currentMode === 'file';
+  const response = await fetch("/predict", {
+    method: "POST",
+    body: requestBody,
+    headers: headers
+  });
 
-        if (isFile) {
-            const file = document.getElementById('fileInput').files[0];
-            if (!file) return alert("Будь ласка, оберіть файл");
-            payload = new FormData();
-            payload.append('file', file);
-        } else {
-            const text = document.getElementById('textInput').value;
-            if (text.length < 20) return alert("Текст занадто короткий");
-            payload = JSON.stringify({ text: text });
-        }
+  const data = await response.json();
 
-        loader.display = 'block';
-        resultArea.style.display = 'none';
+  loader.style.display = "none";
+  result.style.display = "block";
+  percent.innerText = data.ai_percent + "%";
+  verdict.innerText = data.verdict;
+  verdict.style.color = data.ai_percent > 50 ? "#ff4d4d" : "#00f2fe";
 
-        try {
-            const response = await fetch('/predict', {
-                method: 'POST',
-                headers: isFile ? {} : { 'Content-Type': 'application/json' },
-                body: payload
-            });
+  saveToHistory(label, data.ai_percent);
+}
 
-            const data = await response.json();
-            
-            loader.style.display = 'none';
-            resultArea.style.display = 'block';
-            
-            // Анімація прогресу
-            const offset = 126 - (126 * data.ai_percent / 100);
-            document.getElementById('gaugeProgress').style.strokeDashoffset = offset;
-            document.getElementById('percLabel').innerText = data.ai_percent + '%';
-            document.getElementById('verdictLabel').innerText = data.verdict;
-            document.getElementById('verdictLabel').style.color = data.ai_percent > 50 ? '#ff4d4d' : '#00f2fe';
-
-        } catch (e) {
-            alert("Помилка при аналізі");
-            loader.style.display = 'none';
-        }
-    }
+// Завантажує історію при відкритті сторінки
+renderHistory();
 </script>
 
 </body>
