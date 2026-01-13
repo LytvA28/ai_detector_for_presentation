@@ -101,8 +101,9 @@ textarea{
 }
 
 #status{margin-top:12px;font-size:0.95rem;color:var(--primary);}
-#result{margin-top:12px;font-size:1.5rem;font-weight:700;}
-
+.result-container{margin-top:20px; display:flex; flex-direction:column; align-items:center;}
+#gauge{width:200px; height:100px;}
+#percLabel{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:1.5rem; font-weight:bold;}
 </style>
 </head>
 <body>
@@ -129,12 +130,25 @@ textarea{
 <button class="check-btn" onclick="processAnalysis()">ПЕРЕВІРИТИ</button>
 
 <p id="status"></p>
-<h2 id="result"></h2>
 
+<div class="result-container" id="resultArea" style="display:none; position:relative;">
+  <svg id="gauge" viewBox="0 0 100 50">
+    <path d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="#1e293b" stroke-width="8" stroke-linecap="round"/>
+    <path id="gaugeProgress" d="M10,50 A40,40 0 0,1 90,50" fill="none" stroke="url(#grad)" stroke-width="8" stroke-dasharray="126" stroke-dashoffset="126" stroke-linecap="round"/>
+    <defs>
+      <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#4facfe"/>
+        <stop offset="100%" style="stop-color:#00f2fe"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  <div id="percLabel">0%</div>
+  <h2 id="verdictLabel"></h2>
 </div>
 
 <script>
 let currentMode='file';
+let lastCheckTime=0;
 
 function setMode(mode){
   currentMode=mode;
@@ -142,8 +156,8 @@ function setMode(mode){
   event.target.classList.add('active');
   document.getElementById('fileSection').style.display=mode==='file'?'block':'none';
   document.getElementById('textSection').style.display=mode==='text'?'block':'none';
-  status.innerText="";
-  result.innerText="";
+  document.getElementById('status').innerText="";
+  document.getElementById('resultArea').style.display='none';
 }
 
 function updateFileName(){
@@ -151,7 +165,6 @@ function updateFileName(){
   document.getElementById('fileNameDisplay').innerText = input.files[0]?input.files[0].name:"Файл не обрано";
 }
 
-let lastCheckTime=0;
 function processAnalysis(){
   const now=Date.now();
   if(now-lastCheckTime<10000){
@@ -172,34 +185,40 @@ function processAnalysis(){
     payload=JSON.stringify({text:text});
   }
 
-  status.innerText="⏳ Опрацьовуємо...";
-  result.innerText="";
+  document.getElementById('status').innerText="⏳ Опрацьовуємо...";
+  document.getElementById('resultArea').style.display='none';
 
   setTimeout(()=>{
     fetch("/predict",{
       method:"POST",
       headers:currentMode==='file'?{}:{'Content-Type':'application/json'},
       body:payload
-    })
-    .then(r=>r.json())
-    .then(data=>{
-      animateResult(data.ai_percent,data.verdict);
-    })
-    .catch(e=>{
-      status.innerText="❌ Помилка при аналізі";
+    }).then(r=>r.json()).then(data=>{
+      document.getElementById('resultArea').style.display='block';
+      animateGauge(data.ai_percent,data.verdict);
+    }).catch(e=>{
+      document.getElementById('status').innerText="❌ Помилка при аналізі";
     });
   },5000);
 }
 
-function animateResult(target,verdict){
+function animateGauge(target,verdict){
+  const gauge=document.getElementById('gaugeProgress');
+  const percLabel=document.getElementById('percLabel');
+  const verdictLabel=document.getElementById('verdictLabel');
+
   let val=0;
   const interval=setInterval(()=>{
     val++;
-    result.innerText=val+"% AI";
+    const offset=126 - (126*val/100);
+    gauge.style.strokeDashoffset=offset;
+    percLabel.innerText=val+"%";
     if(val>=target){
       clearInterval(interval);
-      result.innerText=target+"% AI — "+verdict;
-      status.innerText="";
+      percLabel.innerText=target+"%";
+      verdictLabel.innerText=verdict;
+      verdictLabel.style.color=target>=50?'#ff4d4d':'#00f2fe';
+      document.getElementById('status').innerText="";
     }
   },20);
 }
